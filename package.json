@@ -1,0 +1,19 @@
+{
+    "name": "mmo-client",
+    "private": true,
+    "scripts": {
+        "build": "rimraf ./dist && webpack",
+        "start": "NODE_ENV=development webpack serve --inline --hot"
+    },
+    "dependencies": {
+        "html-webpack-plugin": "^5.3.1",
+        "rimraf": "^3.0.2",
+        "ts-loader": "^9.2.3",
+        "typescript": "^4.3.2",
+        "webpack": "^5.38.1",
+        "webpack-dev-server": "^3.11.2"
+    },
+    "devDependencies": {
+        "webpack-cli": "^4.7.2"
+    }
+}
