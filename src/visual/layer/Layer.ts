@@ -8,6 +8,12 @@ import { getChunkPosition } from "../logic/getChunkPosition";
 import { getViewPortGamePxCoords } from "../logic/getViewPortGamePxCoords";
 import { GamePxPosition } from "../../models/GamePxPosition";
 import { getBufferedViewPortGamePxCoords } from "../logic/getBufferedViewPortGamePxCoords";
+import { PxPosition } from "../../models/PxPosition";
+import { randomNumber } from "../../utils/randomNumber";
+import { sprites } from "../sprites/sprites";
+import { Sprite } from "../sprites/Sprite";
+import { single } from "../../utils/single";
+import { getGamePxPosition } from "../logic/getGamePxPosition";
 
 export class Layer extends Mountable {
     private container: HTMLDivElement;
@@ -55,6 +61,42 @@ export class Layer extends Mountable {
         this.container.style.top = `${-topLeft.gamePxY}px`;
     }
 
+    public async drawSprite(sprite: Sprite, gamePosition: GamePxPosition) {
+        const size = await sprite.getSize();
+
+        const topLeftGamePosition = gamePosition;
+        const bottomRightGamePosition: GamePxPosition = {
+            gamePxX: gamePosition.gamePxX + size.pxWidth,
+            gamePxY: gamePosition.gamePxY + size.pxHeight,
+        };
+
+        const topLeftChunkPosition = getChunkPosition(this.visualConsts, topLeftGamePosition);
+        const bottomRightChunkPosition = getChunkPosition(this.visualConsts, bottomRightGamePosition);
+
+        for (let chunksX = topLeftChunkPosition.chunksX; chunksX <= bottomRightChunkPosition.chunksX; chunksX++) {
+            for (let chunksY = topLeftChunkPosition.chunksY; chunksY <= bottomRightChunkPosition.chunksY; chunksY++) {
+                const chunkPosition = { chunksX, chunksY };
+                await this.tryDrawSpriteOnChunk(sprite, gamePosition, chunkPosition);
+            }
+        }
+    }
+
+    private async tryDrawSpriteOnChunk(sprite: Sprite, gamePosition: GamePxPosition, chunkPosition: ChunkPosition) {
+        const chunk = this.getChunkAt(chunkPosition);
+        if (!chunk) {
+            return;
+        }
+
+        const chunkGamePosition = getGamePxPosition(this.visualConsts, chunkPosition);
+
+        const inChunkPxPosition: PxPosition = {
+            pxX: gamePosition.gamePxX - chunkGamePosition.gamePxX,
+            pxY: gamePosition.gamePxY - chunkGamePosition.gamePxY,
+        };
+
+        await chunk.drawSprite(sprite, inChunkPxPosition);
+    }
+
     private syncChunks() {
         const viewPort = getViewPortGamePxCoords(this.visualConsts, this.layerState);
         const bufferedViewPort = getBufferedViewPortGamePxCoords(this.visualConsts, viewPort);
@@ -86,28 +128,52 @@ export class Layer extends Mountable {
     }
 
     private createMissingChunksInside(topLeftChunk: ChunkPosition, bottomRightChunk: ChunkPosition) {
-        for (let chunkX = topLeftChunk.chunksX; chunkX <= bottomRightChunk.chunksX; chunkX++) {
-            for (let chunkY = topLeftChunk.chunksY; chunkY <= bottomRightChunk.chunksY; chunkY++) {
-                const isAlready = this.chunks.some(
-                    q => q.chunkSettings.position.chunksX === chunkX && q.chunkSettings.position.chunksY === chunkY
-                );
-
-                if (isAlready) {
+        for (let chunksX = topLeftChunk.chunksX; chunksX <= bottomRightChunk.chunksX; chunksX++) {
+            for (let chunksY = topLeftChunk.chunksY; chunksY <= bottomRightChunk.chunksY; chunksY++) {
+                const existingChunk = this.getChunkAt({ chunksX, chunksY });
+                if (existingChunk) {
                     continue;
                 }
 
-                console.log(`>>> CREATING CHUNK [${chunkX}, ${chunkY}]`);
+                console.log(`>>> CREATING CHUNK [${chunksX}, ${chunksY}]`);
 
                 const chunk = new Chunk(this.visualConsts, {
                     position: {
-                        chunksX: chunkX,
-                        chunksY: chunkY,
+                        chunksX,
+                        chunksY,
                     },
                 });
                 chunk.mount(this.container);
-                chunk.__fillChunk();
+
+                this.__drawRandomContent(chunk);
+
                 this.chunks.push(chunk);
             }
+        }
+    }
+
+    private getChunkAt({ chunksX, chunksY }: ChunkPosition): Chunk | undefined {
+        return single(
+            this.chunks.filter(
+                q => q.chunkSettings.position.chunksX === chunksX && q.chunkSettings.position.chunksY === chunksY
+            )
+        );
+    }
+
+    private async __drawRandomContent(chunk: Chunk) {
+        chunk.__fillChunk();
+
+        const { chunkSize, tileSize } = this.visualConsts;
+        const chunkPxWidth = chunkSize.tilesWidth * tileSize.pxWidth;
+        const chunkPxHeight = chunkSize.tilesHeight * tileSize.pxHeight;
+
+        const chunkGamePosition = getGamePxPosition(this.visualConsts, chunk.chunkSettings.position);
+
+        for (let i = 0; i < 5; i++) {
+            await this.drawSprite(sprites.palm, {
+                gamePxX: chunkGamePosition.gamePxX + randomNumber(0, chunkPxWidth),
+                gamePxY: chunkGamePosition.gamePxY + randomNumber(0, chunkPxHeight),
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 import { PxPosition } from "../../models/PxPosition";
+import { PxSize } from "../../models/PxSize";
 
 export class Sprite {
     private img: HTMLImageElement;
@@ -14,6 +15,15 @@ export class Sprite {
         });
 
         this.img.src = path;
+    }
+
+    public async getSize(): Promise<PxSize> {
+        await this.loaded;
+
+        return {
+            pxWidth: this.img.width,
+            pxHeight: this.img.height,
+        };
     }
 
     public async drawOnContext(context: CanvasRenderingContext2D, position: PxPosition) {
