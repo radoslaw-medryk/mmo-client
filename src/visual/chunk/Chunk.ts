@@ -3,6 +3,7 @@ import { Canvas } from "../canvas/Canvas";
 import { Mountable } from "../mountable/Mountable";
 import { VisualConsts } from "../VisualConsts";
 import { ChunkSettings } from "./ChunkSettings";
+import { randomColor } from "../../utils/randomColor";
 
 export class Chunk extends Mountable {
     private visualConsts: VisualConsts;
@@ -36,7 +37,15 @@ export class Chunk extends Mountable {
         super.unmount(this.container);
     }
 
-    public fillTile(tileX: number, tileY: number, color: string) {
+    public __fillChunk() {
+        for (let x = 0; x < 6; x++) {
+            for (let y = 0; y < 6; y++) {
+                this.__fillTile(x, y, randomColor());
+            }
+        }
+    }
+
+    private __fillTile(tileX: number, tileY: number, color: string) {
         this.canvas.fillTile(tileX, tileY, color);
     }
 }

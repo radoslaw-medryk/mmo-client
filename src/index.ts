@@ -21,4 +21,40 @@ const viewport = new ViewPort({
 
 viewport.mount(root);
 
+let x = 0;
+let y = 0;
+
+document.addEventListener("keydown", ({ code }) => {
+    const d = 20;
+    let dx = 0;
+    let dy = 0;
+
+    switch (code) {
+        case "ArrowUp":
+            dy = -d;
+            break;
+
+        case "ArrowDown":
+            dy = d;
+            break;
+
+        case "ArrowLeft":
+            dx = -d;
+            break;
+
+        case "ArrowRight":
+            dx = d;
+            break;
+
+        default:
+            return;
+    }
+
+    x += dx;
+    y += dy;
+    console.log(`CODE: ${code}, x: ${x}, y: ${y}`);
+
+    viewport.centerOn({ gamePxX: x, gamePxY: y });
+});
+
 console.log("Hello world");

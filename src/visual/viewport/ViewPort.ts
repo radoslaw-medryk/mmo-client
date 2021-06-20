@@ -1,3 +1,4 @@
+import { GamePxPosition } from "../../models/GamePxPosition";
 import { Layer } from "../layer/Layer";
 import { Mountable } from "../mountable/Mountable";
 import { VisualConsts } from "../VisualConsts";
@@ -20,9 +21,6 @@ export class ViewPort extends Mountable {
 
         this.layer = new Layer(visualConsts);
         this.layer.mount(this.container);
-
-        this.layer.syncChunks();
-        this.layer.__paintChunksRandomly();
     }
 
     public mount(parent: HTMLElement) {
@@ -31,5 +29,9 @@ export class ViewPort extends Mountable {
 
     public unmount() {
         super.unmount(this.container);
+    }
+
+    public centerOn(position: GamePxPosition) {
+        this.layer.centerOn(position);
     }
 }

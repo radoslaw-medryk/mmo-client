@@ -6,6 +6,7 @@ import { VisualConsts } from "../VisualConsts";
 import { LayerState } from "./LayerState";
 import { getChunkPosition } from "../logic/getChunkPosition";
 import { getViewPortGamePxCoords } from "../logic/getViewPortGamePxCoords";
+import { GamePxPosition } from "../../models/GamePxPosition";
 
 export class Layer extends Mountable {
     private container: HTMLDivElement;
@@ -29,10 +30,7 @@ export class Layer extends Mountable {
         this.container = document.createElement("div");
         this.container.className = "mmo-layer";
 
-        const { topLeft } = getViewPortGamePxCoords(visualConsts, this.layerState);
-
-        this.container.style.left = `${-topLeft.gamePxX}px`;
-        this.container.style.top = `${-topLeft.gamePxY}px`;
+        this.centerOn(this.layerState.center);
     }
 
     public mount(parent: HTMLElement) {
@@ -43,7 +41,20 @@ export class Layer extends Mountable {
         super.unmount(this.container);
     }
 
-    public syncChunks() {
+    public centerOn(position: GamePxPosition) {
+        const { gamePxX, gamePxY } = position;
+        this.layerState.center.gamePxX = gamePxX;
+        this.layerState.center.gamePxY = gamePxY;
+
+        this.syncChunks();
+
+        const { topLeft } = getViewPortGamePxCoords(this.visualConsts, this.layerState);
+
+        this.container.style.left = `${-topLeft.gamePxX}px`;
+        this.container.style.top = `${-topLeft.gamePxY}px`;
+    }
+
+    private syncChunks() {
         const viewPort = getViewPortGamePxCoords(this.visualConsts, this.layerState);
 
         const viewPortTopLeftChunk = getChunkPosition(this.visualConsts, viewPort.topLeft);
@@ -51,17 +62,6 @@ export class Layer extends Mountable {
 
         this.removeChunksOutside(viewPortTopLeftChunk, viewPortBottomRightChunk);
         this.createMissingChunksInside(viewPortTopLeftChunk, viewPortBottomRightChunk);
-    }
-
-    // TODO [RM]: temp only
-    public __paintChunksRandomly() {
-        for (const chunk of this.chunks) {
-            for (let x = 0; x < 6; x++) {
-                for (let y = 0; y < 6; y++) {
-                    chunk.fillTile(x, y, randomColor());
-                }
-            }
-        }
     }
 
     private removeChunksOutside(topLeftChunk: ChunkPosition, bottomRightChunk: ChunkPosition) {
@@ -77,6 +77,7 @@ export class Layer extends Mountable {
                 chunkPosY > bottomRightChunk.chunksY
             ) {
                 console.log(`>>> REMOVING CHUNK [${chunkPosX}, ${chunkPosY}]`);
+                this.chunks[i].unmount();
                 this.chunks.splice(i, 1);
             }
         }
@@ -102,6 +103,7 @@ export class Layer extends Mountable {
                     },
                 });
                 chunk.mount(this.container);
+                chunk.__fillChunk();
                 this.chunks.push(chunk);
             }
         }

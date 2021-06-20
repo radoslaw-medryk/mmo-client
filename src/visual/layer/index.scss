@@ -1,3 +1,7 @@
+$time: 0.1s;
+$func: linear;
+
 .mmo-layer {
     position: absolute;
+    transition: top $time $func, left $time $func;
 }
