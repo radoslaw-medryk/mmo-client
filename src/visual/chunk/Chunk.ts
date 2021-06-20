@@ -4,6 +4,9 @@ import { Mountable } from "../mountable/Mountable";
 import { VisualConsts } from "../VisualConsts";
 import { ChunkSettings } from "./ChunkSettings";
 import { randomColor } from "../../utils/randomColor";
+import { PxPosition } from "../../models/PxPosition";
+import { randomNumber } from "../../utils/randomNumber";
+import { sprites } from "../sprites/sprites";
 
 export class Chunk extends Mountable {
     private visualConsts: VisualConsts;
@@ -37,15 +40,27 @@ export class Chunk extends Mountable {
         super.unmount(this.container);
     }
 
-    public __fillChunk() {
+    public async __fillChunk() {
         for (let x = 0; x < 6; x++) {
             for (let y = 0; y < 6; y++) {
                 this.__fillTile(x, y, randomColor());
             }
         }
+
+        const { chunkSize, tileSize } = this.visualConsts;
+        const chunkPxWidth = chunkSize.tilesWidth * tileSize.pxWidth;
+        const chunkPxHeight = chunkSize.tilesHeight * tileSize.pxHeight;
+
+        for (let i = 0; i < 5; i++) {
+            const position: PxPosition = {
+                pxX: randomNumber(0, chunkPxWidth),
+                pxY: randomNumber(0, chunkPxHeight),
+            };
+            await this.canvas.drawSprite(sprites.palm, position);
+        }
     }
 
     private __fillTile(tileX: number, tileY: number, color: string) {
-        this.canvas.fillTile(tileX, tileY, color);
+        this.canvas.__fillTile(tileX, tileY, color);
     }
 }

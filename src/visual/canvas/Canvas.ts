@@ -1,5 +1,8 @@
+import { PxPosition } from "../../models/PxPosition";
+import { randomNumber } from "../../utils/randomNumber";
 import { sure } from "../../utils/sure";
 import { Mountable } from "../mountable/Mountable";
+import { Sprite } from "../sprites/Sprite";
 import { VisualConsts } from "../VisualConsts";
 
 export class Canvas extends Mountable {
@@ -32,7 +35,7 @@ export class Canvas extends Mountable {
         super.unmount(this.canvas);
     }
 
-    public fillTile(tileX: number, tileY: number, color: string) {
+    public __fillTile(tileX: number, tileY: number, color: string) {
         const { tileSize } = this.visualConsts;
 
         const canvasPxX = tileSize.pxWidth * tileX;
@@ -47,5 +50,9 @@ export class Canvas extends Mountable {
         this.context.font = "32px Arial";
         this.context.fillText(text, canvasPxX + 20, canvasPxY + 60);
         this.context.strokeText(text, canvasPxX + 20, canvasPxY + 60);
+    }
+
+    public async drawSprite(sprite: Sprite, position: PxPosition) {
+        await sprite.drawOnContext(this.context, position);
     }
 }
