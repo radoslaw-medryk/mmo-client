@@ -1,13 +1,9 @@
 import { GamePxPosition } from "../../models/GamePxPosition";
+import { GamePxRectangle } from "../../models/GamePxRectangle";
 import { LayerState } from "../layer/LayerState";
 import { VisualConsts } from "../VisualConsts";
 
-export type ViewPortGamePxCoords = {
-    topLeft: GamePxPosition;
-    bottomRight: GamePxPosition;
-};
-
-export function getViewPortGamePxCoords(visualConsts: VisualConsts, layerState: LayerState): ViewPortGamePxCoords {
+export function getViewPortGamePxCoords(visualConsts: VisualConsts, layerState: LayerState): GamePxRectangle {
     const { center } = layerState;
     const { viewPortSize, tileSize } = visualConsts;
 

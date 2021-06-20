@@ -5,6 +5,7 @@ const root = document.createElement("div");
 document.body.appendChild(root);
 
 const viewport = new ViewPort({
+    bufferSizePx: 256,
     tileSize: {
         pxWidth: 128,
         pxHeight: 128,

@@ -7,6 +7,7 @@ import { LayerState } from "./LayerState";
 import { getChunkPosition } from "../logic/getChunkPosition";
 import { getViewPortGamePxCoords } from "../logic/getViewPortGamePxCoords";
 import { GamePxPosition } from "../../models/GamePxPosition";
+import { getBufferedViewPortGamePxCoords } from "../logic/getBufferedViewPortGamePxCoords";
 
 export class Layer extends Mountable {
     private container: HTMLDivElement;
@@ -56,12 +57,13 @@ export class Layer extends Mountable {
 
     private syncChunks() {
         const viewPort = getViewPortGamePxCoords(this.visualConsts, this.layerState);
+        const bufferedViewPort = getBufferedViewPortGamePxCoords(this.visualConsts, viewPort);
 
-        const viewPortTopLeftChunk = getChunkPosition(this.visualConsts, viewPort.topLeft);
-        const viewPortBottomRightChunk = getChunkPosition(this.visualConsts, viewPort.bottomRight);
+        const bufferedViewPortTopLeftChunk = getChunkPosition(this.visualConsts, bufferedViewPort.topLeft);
+        const bufferedViewPortBottomRightChunk = getChunkPosition(this.visualConsts, bufferedViewPort.bottomRight);
 
-        this.removeChunksOutside(viewPortTopLeftChunk, viewPortBottomRightChunk);
-        this.createMissingChunksInside(viewPortTopLeftChunk, viewPortBottomRightChunk);
+        this.removeChunksOutside(bufferedViewPortTopLeftChunk, bufferedViewPortBottomRightChunk);
+        this.createMissingChunksInside(bufferedViewPortTopLeftChunk, bufferedViewPortBottomRightChunk);
     }
 
     private removeChunksOutside(topLeftChunk: ChunkPosition, bottomRightChunk: ChunkPosition) {
