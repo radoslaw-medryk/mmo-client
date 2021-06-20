@@ -1,22 +1,22 @@
 import { sure } from "../../utils/sure";
 import { Mountable } from "../mountable/Mountable";
-import { CanvasSettings } from "./CanvasSettings";
+import { VisualConsts } from "../VisualConsts";
 
 export class Canvas extends Mountable {
-    private canvasSettings: CanvasSettings;
+    private visualConsts: VisualConsts;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
 
-    constructor(canvasSettings: CanvasSettings) {
+    constructor(visualConsts: VisualConsts) {
         super();
 
-        this.canvasSettings = canvasSettings;
+        this.visualConsts = visualConsts;
 
         this.canvas = document.createElement("canvas");
 
-        const { tileSize, canvasSize } = this.canvasSettings;
-        const canvasPxSizeWidth = tileSize.pxWidth * canvasSize.tilesWidth;
-        const canvasPxSizeHeight = tileSize.pxHeight * canvasSize.tilesHeight;
+        const { tileSize, chunkSize } = visualConsts;
+        const canvasPxSizeWidth = tileSize.pxWidth * chunkSize.tilesWidth;
+        const canvasPxSizeHeight = tileSize.pxHeight * chunkSize.tilesHeight;
 
         this.canvas.width = canvasPxSizeWidth;
         this.canvas.height = canvasPxSizeHeight;
@@ -33,7 +33,8 @@ export class Canvas extends Mountable {
     }
 
     public fillTile(tileX: number, tileY: number, color: string) {
-        const { tileSize } = this.canvasSettings;
+        const { tileSize } = this.visualConsts;
+
         const canvasPxX = tileSize.pxWidth * tileX;
         const canvasPxY = tileSize.pxHeight * tileY;
 

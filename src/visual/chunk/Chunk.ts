@@ -1,20 +1,24 @@
 import { Canvas } from "../canvas/Canvas";
 import { Mountable } from "../mountable/Mountable";
+import { VisualConsts } from "../VisualConsts";
 import { ChunkSettings } from "./ChunkSettings";
 
 export class Chunk extends Mountable {
-    private chunkSettings: ChunkSettings;
+    private visualConsts: VisualConsts;
     private container: HTMLDivElement;
     private canvas: Canvas;
 
-    constructor(chunkSettings: ChunkSettings) {
+    public chunkSettings: ChunkSettings;
+
+    constructor(visualConsts: VisualConsts, chunkSettings: ChunkSettings) {
         super();
 
+        this.visualConsts = visualConsts;
         this.chunkSettings = chunkSettings;
+
         this.container = document.createElement("div");
 
-        const { canvasSettings } = chunkSettings;
-        this.canvas = new Canvas(canvasSettings);
+        this.canvas = new Canvas(visualConsts);
         this.canvas.mount(this.container);
     }
 
