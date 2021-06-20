@@ -1,3 +1,4 @@
+import { getGamePxPosition } from "../logic/getGamePxPosition";
 import { Canvas } from "../canvas/Canvas";
 import { Mountable } from "../mountable/Mountable";
 import { VisualConsts } from "../VisualConsts";
@@ -17,6 +18,11 @@ export class Chunk extends Mountable {
         this.chunkSettings = chunkSettings;
 
         this.container = document.createElement("div");
+        this.container.className = "mmo-chunk";
+
+        const { gamePxX, gamePxY } = getGamePxPosition(visualConsts, chunkSettings.position);
+        this.container.style.left = `${gamePxX}px`;
+        this.container.style.top = `${gamePxY}px`;
 
         this.canvas = new Canvas(visualConsts);
         this.canvas.mount(this.container);

@@ -1,6 +1,6 @@
-import { GamePxPosition } from "../../../models/GamePxPosition";
-import { VisualConsts } from "../../VisualConsts";
-import { LayerState } from "../LayerState";
+import { GamePxPosition } from "../../models/GamePxPosition";
+import { LayerState } from "../layer/LayerState";
+import { VisualConsts } from "../VisualConsts";
 
 export type ViewPortGamePxCoords = {
     topLeft: GamePxPosition;

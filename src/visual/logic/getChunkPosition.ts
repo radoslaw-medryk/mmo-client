@@ -1,6 +1,6 @@
-import { ChunkPosition } from "../../../models/ChunkPosition";
-import { GamePxPosition } from "../../../models/GamePxPosition";
-import { VisualConsts } from "../../VisualConsts";
+import { ChunkPosition } from "../../models/ChunkPosition";
+import { GamePxPosition } from "../../models/GamePxPosition";
+import { VisualConsts } from "../VisualConsts";
 
 export function getChunkPosition(visualConsts: VisualConsts, gamePxPosition: GamePxPosition): ChunkPosition {
     const { chunkSize, tileSize } = visualConsts;

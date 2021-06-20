@@ -1,10 +1,10 @@
 import "./index.scss";
-import { Layer } from "./visual/layer/Layer";
+import { ViewPort } from "./visual/viewport/ViewPort";
 
 const root = document.createElement("div");
 document.body.appendChild(root);
 
-const layer = new Layer({
+const viewport = new ViewPort({
     tileSize: {
         pxWidth: 128,
         pxHeight: 128,
@@ -19,8 +19,6 @@ const layer = new Layer({
     },
 });
 
-layer.mount(root);
-layer.syncChunks();
-layer.__paintChunksRandomly();
+viewport.mount(root);
 
 console.log("Hello world");

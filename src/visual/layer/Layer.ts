@@ -4,8 +4,8 @@ import { Chunk } from "../chunk/Chunk";
 import { Mountable } from "../mountable/Mountable";
 import { VisualConsts } from "../VisualConsts";
 import { LayerState } from "./LayerState";
-import { getChunkPosition } from "./logic/getChunkPosition";
-import { getViewPortGamePxCoords } from "./logic/getViewPortGamePxCoords";
+import { getChunkPosition } from "../logic/getChunkPosition";
+import { getViewPortGamePxCoords } from "../logic/getViewPortGamePxCoords";
 
 export class Layer extends Mountable {
     private container: HTMLDivElement;
@@ -27,6 +27,12 @@ export class Layer extends Mountable {
         };
 
         this.container = document.createElement("div");
+        this.container.className = "mmo-layer";
+
+        const { topLeft } = getViewPortGamePxCoords(visualConsts, this.layerState);
+
+        this.container.style.left = `${-topLeft.gamePxX}px`;
+        this.container.style.top = `${-topLeft.gamePxY}px`;
     }
 
     public mount(parent: HTMLElement) {
@@ -77,8 +83,8 @@ export class Layer extends Mountable {
     }
 
     private createMissingChunksInside(topLeftChunk: ChunkPosition, bottomRightChunk: ChunkPosition) {
-        for (let chunkX = topLeftChunk.chunksX; chunkX < bottomRightChunk.chunksX; chunkX++) {
-            for (let chunkY = topLeftChunk.chunksY; chunkY < bottomRightChunk.chunksY; chunkY++) {
+        for (let chunkX = topLeftChunk.chunksX; chunkX <= bottomRightChunk.chunksX; chunkX++) {
+            for (let chunkY = topLeftChunk.chunksY; chunkY <= bottomRightChunk.chunksY; chunkY++) {
                 const isAlready = this.chunks.some(
                     q => q.chunkSettings.position.chunksX === chunkX && q.chunkSettings.position.chunksY === chunkY
                 );

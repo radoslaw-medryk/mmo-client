@@ -40,5 +40,12 @@ export class Canvas extends Mountable {
 
         this.context.fillStyle = color;
         this.context.fillRect(canvasPxX, canvasPxY, tileSize.pxWidth, tileSize.pxHeight);
+
+        const text = `${tileX} / ${tileY}`;
+        this.context.strokeStyle = "#444";
+        this.context.fillStyle = "#fff";
+        this.context.font = "32px Arial";
+        this.context.fillText(text, canvasPxX + 20, canvasPxY + 60);
+        this.context.strokeText(text, canvasPxX + 20, canvasPxY + 60);
     }
 }
