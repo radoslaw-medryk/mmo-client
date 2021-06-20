@@ -1,7 +1,3 @@
-import { startDummy } from "./dummy/startDummy";
-import { Game } from "./game/Game";
-import { Visual } from "./visual/Visual";
+import "./index.scss";
 
-const game = new Game({ playerPos: { x: 100, y: 100 } });
-const visual = new Visual(game);
-startDummy(game);
+console.log("Hello world");
