@@ -5,12 +5,9 @@ import { VisualConsts } from "../VisualConsts";
 import { ChunkSettings } from "./ChunkSettings";
 import { randomColor } from "../../utils/randomColor";
 import { PxPosition } from "../../models/PxPosition";
-import { randomNumber } from "../../utils/randomNumber";
-import { sprites } from "../sprites/sprites";
 import { Sprite } from "../sprites/Sprite";
 
 export class Chunk extends Mountable {
-    private visualConsts: VisualConsts;
     private container: HTMLDivElement;
     private canvas: Canvas;
 
@@ -19,7 +16,6 @@ export class Chunk extends Mountable {
     constructor(visualConsts: VisualConsts, chunkSettings: ChunkSettings) {
         super();
 
-        this.visualConsts = visualConsts;
         this.chunkSettings = chunkSettings;
 
         this.container = document.createElement("div");

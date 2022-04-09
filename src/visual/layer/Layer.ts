@@ -14,10 +14,14 @@ import { sprites } from "../sprites/sprites";
 import { Sprite } from "../sprites/Sprite";
 import { single } from "../../utils/single";
 import { getGamePxPosition } from "../logic/getGamePxPosition";
+import { LayerElement } from "../element/LayerElement";
+import { GamePxRectangle } from "../../models/GamePxRectangle";
+import { getContainingRectangleFromRectangles } from "../logic/getContainingRectangleFromRectangles";
 
 export class Layer extends Mountable {
     private container: HTMLDivElement;
     private chunks: Chunk[] = [];
+    private elements: LayerElement[] = [];
 
     private visualConsts: VisualConsts;
     private layerState: LayerState;
@@ -61,6 +65,10 @@ export class Layer extends Mountable {
         this.container.style.top = `${-topLeft.gamePxY}px`;
     }
 
+    public addElement(element: LayerElement) {
+        this.elements.push(element);
+    }
+
     public async drawSprite(sprite: Sprite, gamePosition: GamePxPosition) {
         const size = await sprite.getSize();
 
@@ -79,6 +87,34 @@ export class Layer extends Mountable {
                 await this.tryDrawSpriteOnChunk(sprite, gamePosition, chunkPosition);
             }
         }
+    }
+
+    private segregateElements() {
+        const overlaping: LayerElement[] = [];
+        const notOverlaping: LayerElement[] = [];
+
+        const viewPort = getViewPortGamePxCoords(this.visualConsts, this.layerState);
+        const bufferedViewPort = getBufferedViewPortGamePxCoords(this.visualConsts, viewPort);
+
+        for (const element of this.elements) {
+            const isOverlaping = element.overlapsArea(bufferedViewPort);
+            if (isOverlaping) {
+                overlaping.push(element);
+            } else {
+                notOverlaping.push(element);
+            }
+        }
+
+        return {
+            overlaping,
+            notOverlaping,
+        };
+    }
+
+    private getContainingRectangle(elements: LayerElement[]): GamePxRectangle | undefined {
+        const rectangles = elements.map(q => q.elementSettings.rectangle);
+
+        return getContainingRectangleFromRectangles(rectangles);
     }
 
     private async tryDrawSpriteOnChunk(sprite: Sprite, gamePosition: GamePxPosition, chunkPosition: ChunkPosition) {
