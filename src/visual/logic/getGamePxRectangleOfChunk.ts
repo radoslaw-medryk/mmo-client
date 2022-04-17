@@ -1,8 +1,9 @@
 import { ChunkPosition } from "../../models/ChunkPosition";
 import { GamePxPosition } from "../../models/GamePxPosition";
+import { GamePxRectangle } from "../../models/GamePxRectangle";
 import { VisualConsts } from "../VisualConsts";
 
-export function getGamePxPosition(visualConsts: VisualConsts, chunkPosition: ChunkPosition): GamePxPosition {
+export function getGamePxRectangleOfChunk(visualConsts: VisualConsts, chunkPosition: ChunkPosition): GamePxRectangle {
     const { chunkSize, tileSize } = visualConsts;
     const { chunksX, chunksY } = chunkPosition;
 
@@ -11,9 +12,18 @@ export function getGamePxPosition(visualConsts: VisualConsts, chunkPosition: Chu
 
     const gamePxX = chunksX * chunkPxWidth;
     const gamePxY = chunksY * chunkPxHeight;
-
-    return {
+    const topLeft: GamePxPosition = {
         gamePxX,
         gamePxY,
+    };
+
+    const bottomRight: GamePxPosition = {
+        gamePxX: topLeft.gamePxX + chunkPxWidth,
+        gamePxY: topLeft.gamePxY + chunkPxHeight,
+    };
+
+    return {
+        topLeft,
+        bottomRight,
     };
 }

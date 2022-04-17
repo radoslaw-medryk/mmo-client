@@ -12,12 +12,12 @@ export class Mountable {
         this.current = current;
     }
 
-    public unmount(current: HTMLElement) {
+    public unmount() {
         if (!this.parent || !this.current) {
             return;
         }
 
-        this.parent.removeChild(current);
+        this.parent.removeChild(this.current);
         this.parent = undefined;
         this.current = undefined;
     }

@@ -32,7 +32,7 @@ export class Canvas extends Mountable {
     }
 
     public unmount() {
-        super.unmount(this.canvas);
+        super.unmount();
     }
 
     public __fillTile(tileX: number, tileY: number, color: string) {

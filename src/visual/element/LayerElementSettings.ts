@@ -1,7 +1,7 @@
-import { GamePxRectangle } from "../../models/GamePxRectangle";
+import { GamePxPosition } from "../../models/GamePxPosition";
 import { Sprite } from "../sprites/Sprite";
 
 export type LayerElementSettings = {
-    rectangle: GamePxRectangle;
     sprite: Sprite;
+    gamePxPosition: GamePxPosition;
 };

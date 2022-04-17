@@ -2,12 +2,14 @@ import { PxPosition } from "../../models/PxPosition";
 import { PxSize } from "../../models/PxSize";
 
 export class Sprite {
-    private img: HTMLImageElement;
+    public pxSize: PxSize;
 
+    private img: HTMLImageElement;
     private loaded: Promise<void>;
 
-    constructor(path: string) {
+    constructor(path: string, pxSize: PxSize) {
         this.img = document.createElement("img");
+        this.pxSize = pxSize;
 
         this.loaded = new Promise((resolve, reject) => {
             this.img.addEventListener("error", reject);
@@ -15,15 +17,8 @@ export class Sprite {
         });
 
         this.img.src = path;
-    }
-
-    public async getSize(): Promise<PxSize> {
-        await this.loaded;
-
-        return {
-            pxWidth: this.img.width,
-            pxHeight: this.img.height,
-        };
+        this.img.width = pxSize.pxWidth;
+        this.img.height = pxSize.pxHeight;
     }
 
     public async drawOnContext(context: CanvasRenderingContext2D, position: PxPosition) {

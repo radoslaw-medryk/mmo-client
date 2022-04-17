@@ -53,7 +53,6 @@ document.addEventListener("keydown", ({ code }) => {
 
     x += dx;
     y += dy;
-    console.log(`CODE: ${code}, x: ${x}, y: ${y}`);
 
     viewport.centerOn({ gamePxX: x, gamePxY: y });
 });

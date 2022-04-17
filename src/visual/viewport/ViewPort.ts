@@ -28,7 +28,7 @@ export class ViewPort extends Mountable {
     }
 
     public unmount() {
-        super.unmount(this.container);
+        super.unmount();
     }
 
     public centerOn(position: GamePxPosition) {
