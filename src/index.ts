@@ -1,26 +1,22 @@
+import { VisualController } from "./engine/visualController/VisualController";
 import "./index.scss";
-import { ViewPort } from "./visual/viewport/ViewPort";
 
 const root = document.createElement("div");
 document.body.appendChild(root);
 
-const viewport = new ViewPort({
-    bufferSizePx: 256,
-    tileSize: {
-        pxWidth: 128,
-        pxHeight: 128,
-    },
+const visualController = new VisualController({
+    bufferPxSize: 256,
     viewPortSize: {
-        tilesWidth: 6,
-        tilesHeight: 6,
+        pxWidth: 6 * 128,
+        pxHeight: 6 * 128,
     },
     chunkSize: {
-        tilesWidth: 6,
-        tilesHeight: 6,
+        pxWidth: 6 * 128,
+        pxHeight: 6 * 128,
     },
 });
 
-viewport.mount(root);
+visualController.mountViewPort(root);
 
 let x = 0;
 let y = 0;
@@ -54,7 +50,7 @@ document.addEventListener("keydown", ({ code }) => {
     x += dx;
     y += dy;
 
-    viewport.centerOn({ gamePxX: x, gamePxY: y });
+    visualController.centerOn({ gamePxX: x, gamePxY: y });
 });
 
 console.log("Hello world");

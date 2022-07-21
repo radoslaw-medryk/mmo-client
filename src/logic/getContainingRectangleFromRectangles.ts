@@ -1,5 +1,5 @@
-import { GamePxPosition } from "../../models/GamePxPosition";
-import { GamePxRectangle } from "../../models/GamePxRectangle";
+import { GamePxPosition } from "../models/GamePxPosition";
+import { GamePxRectangle } from "../models/GamePxRectangle";
 import { getContainingRectangleFromPoints } from "./getContainingRectangleFromPoints";
 
 export function getContainingRectangleFromRectangles(rectangles: GamePxRectangle[]): GamePxRectangle | undefined {

@@ -1,4 +1,4 @@
-import { GamePxRectangle } from "../../models/GamePxRectangle";
+import { GamePxRectangle } from "../models/GamePxRectangle";
 
 export function rectanglesOverlap(a: GamePxRectangle, b: GamePxRectangle) {
     return (
