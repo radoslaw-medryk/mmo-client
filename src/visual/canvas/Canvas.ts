@@ -29,23 +29,6 @@ export class Canvas extends Mountable {
         super.unmount();
     }
 
-    // public __fillTile(tileX: number, tileY: number, color: string) {
-    //     const { tileSize } = this.visualConsts;
-
-    //     const canvasPxX = tileSize.pxWidth * tileX;
-    //     const canvasPxY = tileSize.pxHeight * tileY;
-
-    //     this.context.fillStyle = color;
-    //     this.context.fillRect(canvasPxX, canvasPxY, tileSize.pxWidth, tileSize.pxHeight);
-
-    //     const text = `${tileX} / ${tileY}`;
-    //     this.context.strokeStyle = "#444";
-    //     this.context.fillStyle = "#fff";
-    //     this.context.font = "32px Arial";
-    //     this.context.fillText(text, canvasPxX + 20, canvasPxY + 60);
-    //     this.context.strokeText(text, canvasPxX + 20, canvasPxY + 60);
-    // }
-
     public async drawSprite(sprite: Sprite, position: PxPosition) {
         await sprite.drawOnContext(this.context, position);
     }

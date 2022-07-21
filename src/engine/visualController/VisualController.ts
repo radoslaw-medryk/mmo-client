@@ -1,12 +1,15 @@
 import { getBufferedGamePxRectangle } from "../../logic/getBufferedGamePxRectangle";
 import { getChunkPosition } from "../../logic/getChunkPosition";
+import { getGamePxRectangleOfChunk } from "../../logic/getGamePxRectangleOfChunk";
 import { getViewPortGamePxRectangle } from "../../logic/getViewPortGamePxRectangle";
 import { ChunkPosition } from "../../models/ChunkPosition";
 import { ChunkRectangle } from "../../models/ChunkRectangle";
 import { GamePxPosition } from "../../models/GamePxPosition";
 import { VisualConsts } from "../../models/VisualConsts";
 import { isBetween } from "../../utils/isBetween";
+import { randomNumber } from "../../utils/randomNumber";
 import { Sprite } from "../../visual/sprites/Sprite";
+import { sprites } from "../../visual/sprites/sprites";
 import { ViewPort } from "../../visual/viewport/ViewPort";
 
 export class VisualController {
@@ -81,6 +84,17 @@ export class VisualController {
                 }
 
                 layer.addChunk(chunkPosition);
+
+                // TODO: temp:
+                const rectangle = getGamePxRectangleOfChunk(this.visualConsts, chunkPosition);
+                for (let i = 0; i < 10; i++) {
+                    const pos: GamePxPosition = {
+                        gamePxX: randomNumber(rectangle.topLeft.gamePxX, rectangle.bottomRight.gamePxX),
+                        gamePxY: randomNumber(rectangle.topLeft.gamePxY, rectangle.bottomRight.gamePxY),
+                    };
+                    this.drawSprite(sprites.palm, pos);
+                }
+                //
             }
         }
     }
