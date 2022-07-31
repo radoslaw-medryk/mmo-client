@@ -27,7 +27,7 @@ export class VisualController {
         this.viewPort.mount(parent);
     }
 
-    public async centerOn(gamePxPosition: GamePxPosition) {
+    public centerOn = async (gamePxPosition: GamePxPosition) => {
         this.center = {
             gamePxX: gamePxPosition.gamePxX,
             gamePxY: gamePxPosition.gamePxY,
@@ -36,7 +36,7 @@ export class VisualController {
         this.viewPort.centerOn(gamePxPosition);
 
         await this.syncChunks();
-    }
+    };
 
     public async drawSprite(sprite: Sprite, gamePxPosition: GamePxPosition) {
         const layer = this.viewPort.getLayer();

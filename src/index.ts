@@ -1,10 +1,13 @@
+import { CommunicationController } from "./engine/communicationController/CommunicationController";
 import { VisualController } from "./engine/visualController/VisualController";
 import "./index.scss";
+import { Direction } from "./models/Direction";
+import { VisualConsts } from "./models/VisualConsts";
 
 const root = document.createElement("div");
 document.body.appendChild(root);
 
-const visualController = new VisualController({
+const visualConsts: VisualConsts = {
     bufferPxSize: 256,
     viewPortSize: {
         pxWidth: 6 * 128,
@@ -14,43 +17,39 @@ const visualController = new VisualController({
         pxWidth: 6 * 128,
         pxHeight: 6 * 128,
     },
-});
+};
+
+const communicationController = new CommunicationController(visualConsts);
+const visualController = new VisualController(visualConsts);
 
 visualController.mountViewPort(root);
 
-let x = 0;
-let y = 0;
+communicationController.onPlayerPositionChanged.on(visualController.centerOn);
 
 document.addEventListener("keydown", ({ code }) => {
-    const d = 20;
-    let dx = 0;
-    let dy = 0;
-
-    switch (code) {
-        case "ArrowUp":
-            dy = -d;
-            break;
-
-        case "ArrowDown":
-            dy = d;
-            break;
-
-        case "ArrowLeft":
-            dx = -d;
-            break;
-
-        case "ArrowRight":
-            dx = d;
-            break;
-
-        default:
-            return;
+    const direction = arrowCodeToDirection(code);
+    if (!direction) {
+        return;
     }
 
-    x += dx;
-    y += dy;
-
-    visualController.centerOn({ gamePxX: x, gamePxY: y });
+    communicationController.inputPlayerMove(direction);
 });
 
-console.log("Hello world");
+function arrowCodeToDirection(code: string): Direction | undefined {
+    switch (code) {
+        case "ArrowUp":
+            return Direction.North;
+
+        case "ArrowDown":
+            return Direction.South;
+
+        case "ArrowLeft":
+            return Direction.West;
+
+        case "ArrowRight":
+            return Direction.East;
+
+        default:
+            return undefined;
+    }
+}
