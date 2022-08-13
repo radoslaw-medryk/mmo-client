@@ -25,6 +25,9 @@ const visualController = new VisualController(visualConsts);
 visualController.mountViewPort(root);
 
 communicationController.onPlayerPositionChanged.on(visualController.centerOn);
+communicationController.onChunksAppeared.on(visualController.addChunks);
+communicationController.onChunksDisappeared.on(visualController.removeChunks);
+communicationController.onSpritesAppeared.on(visualController.drawSprites);
 
 document.addEventListener("keydown", ({ code }) => {
     const direction = arrowCodeToDirection(code);
