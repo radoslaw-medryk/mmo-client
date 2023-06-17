@@ -1,15 +1,19 @@
 import { addVectorToGamePxPosition } from "../../logic/addVectorToGamePxPosition";
 import { getBufferedGamePxRectangle } from "../../logic/getBufferedGamePxRectangle";
 import { getChunkPosition } from "../../logic/getChunkPosition";
+import { getChunkRectangleFromGameRectangle } from "../../logic/getChunkRectangleFromGameRectangle";
+import { getChunksInChunkRectangle } from "../../logic/getChunksInChunkRectangle";
 import { getDirectionUnitVector } from "../../logic/getDirectionUnitVector";
 import { getGamePxRectangleOfChunk } from "../../logic/getGamePxRectangleOfChunk";
 import { getViewPortGamePxRectangle } from "../../logic/getViewPortGamePxRectangle";
 import { isChunkWithinRectangle } from "../../logic/isChunkWithinRectangle";
+import { isGamePositionWithinRectangle } from "../../logic/isGamePositionWithinRectangle";
 import { multiplyVector } from "../../logic/multiplyVector";
 import { ChunkPosition } from "../../models/ChunkPosition";
 import { ChunkRectangle } from "../../models/ChunkRectangle";
 import { Direction } from "../../models/Direction";
 import { GamePxPosition } from "../../models/GamePxPosition";
+import { GamePxRectangle } from "../../models/GamePxRectangle";
 import { VisualConsts } from "../../models/VisualConsts";
 import { randomNumber } from "../../utils/randomNumber";
 import { sprites } from "../../visual/sprites/sprites";
@@ -19,10 +23,12 @@ import { SpriteAppeared } from "./models/SpriteAppeared";
 export class ServerMocker {
     private visualConsts: VisualConsts;
     private communicationController: CommunicationController;
-    private stepSizePx = 10;
+    private stepSizePx = 50;
 
     private playerPosition: GamePxPosition = { gamePxX: 0, gamePxY: 0 };
     private chunks = new Map<string, ChunkPosition>();
+
+    private spritesByChunk = new Map<string, SpriteAppeared[]>();
 
     constructor(visualConsts: VisualConsts, communicationController: CommunicationController) {
         this.visualConsts = visualConsts;
@@ -45,13 +51,12 @@ export class ServerMocker {
     }
 
     private async syncChunks() {
-        const viewPort = getViewPortGamePxRectangle(this.visualConsts, this.playerPosition);
-        const bufferedViewPort = getBufferedGamePxRectangle(this.visualConsts, viewPort);
+        const { chunkBufferPxSize } = this.visualConsts;
 
-        const bufferedChunkRectangle: ChunkRectangle = {
-            topLeft: getChunkPosition(this.visualConsts, bufferedViewPort.topLeft),
-            bottomRight: getChunkPosition(this.visualConsts, bufferedViewPort.bottomRight),
-        };
+        const viewPort = getViewPortGamePxRectangle(this.visualConsts, this.playerPosition);
+        const bufferedViewPort = getBufferedGamePxRectangle(viewPort, chunkBufferPxSize);
+
+        const bufferedChunkRectangle = getChunkRectangleFromGameRectangle(this.visualConsts, bufferedViewPort);
 
         this.removeChunksOutside(bufferedChunkRectangle);
         this.addMissingChunksInside(bufferedChunkRectangle);
@@ -99,6 +104,28 @@ export class ServerMocker {
         }
 
         this.addChunks(chunksToAdd);
+        this._generateExampleSprites(chunksToAdd);
+    }
+
+    // TODO: TEMP
+    private _generateExampleSprites(chunks: ChunkPosition[]) {
+        const newSprites: SpriteAppeared[] = [];
+
+        for (const chunk of chunks) {
+            const rectangle = getGamePxRectangleOfChunk(this.visualConsts, chunk);
+            for (let i = 0; i < 10; i++) {
+                const position: GamePxPosition = {
+                    gamePxX: randomNumber(rectangle.topLeft.gamePxX, rectangle.bottomRight.gamePxX),
+                    gamePxY: randomNumber(rectangle.topLeft.gamePxY, rectangle.bottomRight.gamePxY),
+                };
+                newSprites.push({
+                    sprite: sprites.palm,
+                    position,
+                });
+            }
+        }
+
+        this.communicationController.onSpritesAppeared.trigger(newSprites);
     }
 
     private removeChunks(chunksToRemove: ChunkPosition[]) {
@@ -134,6 +161,39 @@ export class ServerMocker {
         }
 
         this.communicationController.onChunksAppeared.trigger(appearedChunks);
+    }
+
+    private getNewlyAppearedSpriteArea(oldPlayerPosition: GamePxPosition, newPlayerPosition: GamePxPosition) {
+        const { spriteBufferPxSize } = this.visualConsts;
+
+        const oldViewPort = getViewPortGamePxRectangle(this.visualConsts, oldPlayerPosition);
+        const oldBufferedViewPort = getBufferedGamePxRectangle(oldViewPort, spriteBufferPxSize);
+
+        const newViewPort = getViewPortGamePxRectangle(this.visualConsts, newPlayerPosition);
+        const newBufferedViewPort = getBufferedGamePxRectangle(newViewPort, spriteBufferPxSize);
+    }
+
+    private getSpritesFromArea(rectangle: GamePxRectangle): SpriteAppeared[] {
+        const chunkRectangle = getChunkRectangleFromGameRectangle(this.visualConsts, rectangle);
+        const chunks = getChunksInChunkRectangle(chunkRectangle);
+
+        const sprites: SpriteAppeared[] = [];
+        for (const chunk of chunks) {
+            const key = this.chunkKey(chunk);
+
+            const chunkSprites = this.spritesByChunk.get(key) || [];
+            const areaChunkSprites = chunkSprites.filter(sprite =>
+                isGamePositionWithinRectangle(sprite.position, rectangle)
+            );
+
+            sprites.push(...areaChunkSprites);
+        }
+
+        return sprites;
+    }
+
+    private sendNewSprites(sprites: SpriteAppeared[]) {
+        this.communicationController.onSpritesAppeared.trigger(sprites);
     }
 
     private chunkKey({ chunksX, chunksY }: ChunkPosition): string {
